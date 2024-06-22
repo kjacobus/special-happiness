@@ -27,21 +27,49 @@ app.get("/api/hello", function (req, res) {
 
 
 app.get("/api/:date?", function (req,res) {
-  console.log(req.params);
-  console.log(req.params['date']);
-
+  console.log('this is the beginning')
+  console.log('req.params ' + req.params);
+  console.log('req.params[date] ' + req.params['date']);
+  console.log('typeof ' + typeof(req.params['date']))
+  console.log('+req.params[date] ' + +req.params['date'])
+  console.log('Date.parse(req.params[date]).valueof: ' + Date(req.params['date']).valueof);
+  
+  //check if parameter is empty
   if (null != req.params['date']) {
-    const function_date = new Date(parseInt(req.params['date']));
-    console.log("function_date: " + function_date)
-    res.json({unix: Date.parse(function_date),
+    //check if parameter is a string of numbers or date string
+    if (isNaN(+req.params['date'])) {
+      //if a string that's like a date
+      const function_date = new Date(req.params['date']);
+      //check if valid
+      
+      if (isNaN(function_date.valueOf())) {
+        //if invalid
+        res.json({error: 'Invalid Date'})
+
+      }
+      else {
+      console.log("function_date: " + function_date)
+      res.json({unix: Date.parse(function_date),
       utc: function_date.toUTCString()});
+      }
+    }
+    //if a string that's numbers
+    else {
+      const function_date = new Date(parseInt(req.params['date']));
+      console.log("function_date: " + function_date)
+      res.json({unix: Date.parse(function_date),
+        utc: function_date.toUTCString()});
+    }
+
     
   }
+  //if empty parameter return now()
   else {
-    res.json({error : 'Invalid Date'})
+    res.json({unix: Date.parse(Date()),
+      utc: Date()})
 
   }
-  
+
 
 });
 
